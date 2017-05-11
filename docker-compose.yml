@@ -1,0 +1,32 @@
+version: '2'
+services:
+  rancher-server:
+    image: rancher/server:latest
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./db/data:/var/lib/mysql
+    #  - ./ssl/ca.crt:/var/lib/rancher/etc/ssl/ca.crt
+    ports:
+      - "8080"
+      - "9345:9345"
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./nginx/ssl/cert1.pem:/etc/ssl/cert.pem
+      - ./nginx/ssl/privkey1.pem:/etc/ssl/key.pem
+      - ./nginx/cnf/rancher.conf:/etc/nginx/conf.d/rancher.conf
+    ports:
+      - "80:80/tcp"
+      - "443:443/tcp"
+    environment:
+      - NGINX_UPSTREAM=rancher-server
+      - NGINX_HOST=rancher.3x3.cloud
+      - NGINX_PORT=80
+      - NGINX_SSL_PORT=443
+      - NGINX_CERT_FILE=/etc/ssl/cert.pem
+      - NGINX_KEY_FILE=/etc/ssl/key.pem
+    depends_on:
+      - rancher-server
