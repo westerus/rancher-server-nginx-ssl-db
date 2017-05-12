@@ -8,8 +8,6 @@ services:
       - ./db/sql/config.sql:/docker-entrypoint-initdb.d/config.sql
     environment:
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
-    expose:
-      - "3306/tcp"
   rancher-server:
     image: rancher/server:latest
     restart: unless-stopped
@@ -18,8 +16,6 @@ services:
       #- ./nginx/ssl/ca.crt:/var/lib/rancher/etc/ssl/ca.crt
     depends_on:
       - mariadb
-    ports:
-      - "9345:9345"
     command: --db-host mariadb --db-user rancher --db-pass ohqajplrbgxicfymun --advertise-address xxx.xxx.xxx.xxx
   nginx:
     image: nginx:alpine
